@@ -133,3 +133,6 @@ dmypy.json
 *.iws
 *.iml
 *.ipr
+
+# User
+*.db
