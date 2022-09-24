@@ -1,8 +1,8 @@
 import sqlite3
 import json
 
-schema_file = 'databases/migraines/schema.sql'
-database_file = 'databases/migraines/migraines.db'
+schema_file = '../databases/migraines-schema.sql'
+database_file = '../databases/migraines.db'
 
 
 def init_db():
