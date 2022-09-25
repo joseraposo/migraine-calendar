@@ -1,13 +1,8 @@
 from flask import request, jsonify, make_response
 from migraine_calendar import app
-import migraine_calendar.repository2 as repo
+import migraine_calendar.repository as repo
 
 PREFIX = "/api/v1/migraines"
-
-
-@app.route(PREFIX, methods=['GET'])
-def home():
-    return "Hello World"
 
 
 @app.route(PREFIX + '/all', methods=['GET'])
@@ -44,8 +39,3 @@ def api_put_migraine(mid):
 def api_delete_migraine(mid):
     repo.delete_migraine_by_id(mid)
     return make_response('', 204)
-
-
-@app.errorhandler(404)
-def page_not_found(e):
-    return "<h1>404</h1><p>The resource could not be found.</p>", 404

@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+{% for migraine in migraines %}
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata">
+            <a class="mr-2" href="#">{{ migraine.start }}</a>
+            <small class="text-muted">{{ migraine.stop }}</small>
+        </div>
+        <h2><a class="article-title" href="#">{{ migraine.intensity }}</a></h2>
+        <p class="article-content">{{ migraine.medication }}</p>
+        <p class="article-content">{{ migraine.reason }}</p>
+    </div>
+</article>
+{% endfor %}
+{% endblock content %}
