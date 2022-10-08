@@ -38,7 +38,6 @@ class Sleep(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     created = Column(DateTime, default=datetime.utcnow)
-    sleep_date = Column(DateTime, nullable=False)
     start = Column(DateTime, nullable=False)
     stop = Column(DateTime)
     light_min = Column(Integer)
@@ -49,12 +48,24 @@ class Sleep(db.Model):
     notes = Column(String)
 
     def __repr__(self):
-        return f"Migraine(id:{self.id}, sleep_date:{self.sleep_date}, started:{self.start}, stopped:{self.stop})"
+        return f"Sleep(id:{self.id}, sleep_date:{self.sleep_date}, started:{self.start}, stopped:{self.stop})"
+
+
+class User(db.Model):
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    created = Column(DateTime, default=datetime.utcnow)
+    name = Column(String)
+    password_hash = Column(String)
 
 
 ############
 # Queries  #
 ############
+
+# Migraine
+########
 def get_all_migraines():
     return db.session.query(Migraine).all()
 
@@ -94,10 +105,75 @@ def update_migraine_by_id(migraine_id, migraine_json):
     if 'notes' in migraine_json:
         migraine.notes = migraine_json['notes']
 
-    #db.session.query(Migraine).filter(Migraine.id == migraine_id).update(migraine, synchronize_session=False)
+    # db.session.query(Migraine).filter(Migraine.id == migraine_id).update(migraine, synchronize_session=False)
     db.session.commit()
 
 
 def delete_migraine_by_id(migraine_id):
     db.session.query(Migraine).filter(Migraine.id == migraine_id).delete()
+    db.session.commit()
+
+
+# Sleep
+########
+def get_all_sleeps():
+    return db.session.query(Sleep).all()
+
+
+def get_sleep_by_id(sleep_id):
+    return db.session.query(Sleep).filter(Sleep.id == sleep_id).first()
+
+
+def insert_new_sleep(sleep_json):
+    date_format = '%Y-%m-%d'
+
+    sleep = Sleep(start=datetime.strptime(sleep_json['start'], date_format),
+                  stop=datetime.strptime(sleep_json['stop'], date_format),
+                  light_min=sleep_json['light_min'],
+                  deep_min=sleep_json['deep_min'],
+                  rem_min=sleep_json['rem_min'],
+                  awake_min=sleep_json['awake_min'],
+                  feeling=sleep_json['feeling'],
+                  notes=sleep_json['notes'])
+    db.session.add(sleep)
+    db.session.commit()
+
+
+def update_sleep_by_id(sleep_id, sleep_json):
+    date_format = '%Y-%m-%d'
+
+    sleep = db.session.query(Sleep).filter(Sleep.id == sleep_id).first()
+
+    if 'start' in sleep_json:
+        sleep.start = datetime.strptime(sleep_json['start'], date_format)
+    if 'stop' in sleep_json:
+        sleep.stop = datetime.strptime(sleep_json['stop'], date_format)
+    if 'light_min' in sleep_json:
+        sleep.light_min = sleep_json['light_min']
+    if 'deep_min' in sleep_json:
+        sleep.deep_min = sleep_json['deep_min']
+    if 'rem_min' in sleep_json:
+        sleep.rem_min = sleep_json['rem_min']
+    if 'feeling' in sleep_json:
+        sleep.feeling = sleep_json['feeling']
+    if 'notes' in sleep_json:
+        sleep.notes = sleep_json['notes']
+
+    # db.session.query(Migraine).filter(Migraine.id == migraine_id).update(migraine, synchronize_session=False)
+    db.session.commit()
+
+
+def delete_sleep_by_id(sleep_id):
+    db.session.query(Sleep).filter(Sleep.id == sleep_id).delete()
+    db.session.commit()
+
+
+# User
+########
+def add_new_user(user_json):
+    date_format = '%Y-%m-%d'
+
+    user = User(name=user_json['name'],
+                password_hash=user_json['password_hash'])
+    db.session.add(user)
     db.session.commit()
