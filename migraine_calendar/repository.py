@@ -1,14 +1,12 @@
-from sqlalchemy import Column, Integer, String, DateTime, MetaData, create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime
-from migraine_calendar import db
+from migraine_calendar import db, login_manager
+from flask_login import UserMixin
 
-#
-# engine = create_engine('sqlite:///../databases/migraines.db', echo=True)
-# Session = sessionmaker(bind=engine)
-# session = Session()
-# Base = declarative_base()
+
+@login_manager.user_loader
+def load_user(user_id):
+    return get_user_by_id(int(user_id))
 
 
 ###########
@@ -51,7 +49,7 @@ class Sleep(db.Model):
         return f"Sleep(id:{self.id}, sleep_date:{self.sleep_date}, started:{self.start}, stopped:{self.stop})"
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -65,7 +63,7 @@ class User(db.Model):
 ############
 
 # Migraine
-########
+###########
 def get_all_migraines():
     return db.session.query(Migraine).all()
 
@@ -170,10 +168,27 @@ def delete_sleep_by_id(sleep_id):
 
 # User
 ########
-def add_new_user(user_json):
-    date_format = '%Y-%m-%d'
+def add_new_user_json(user_json):
 
     user = User(name=user_json['name'],
                 password_hash=user_json['password_hash'])
     db.session.add(user)
     db.session.commit()
+
+
+def add_new_user_form(username, password_hash):
+    user = User(name=username,
+                password_hash=password_hash)
+    db.session.add(user)
+    db.session.commit()
+
+
+def get_user_by_name(username):
+    return db.session.query(User).filter(User.name == username).first()
+
+
+def get_user_by_id(user_id):
+    return db.session.query(User).filter(User.id == user_id).first()
+
+
+

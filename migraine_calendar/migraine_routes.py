@@ -6,7 +6,7 @@ PREFIX = "/api/v1/migraines"
 
 
 @app.route(PREFIX + '/all', methods=['GET'])
-def api_get_all():
+def api_get_all_migrations():
     print("get all migraines")
     migraines = repo.get_all_migraines()
     print(migraines)
@@ -14,7 +14,7 @@ def api_get_all():
 
 
 @app.route(PREFIX + '/<mid>', methods=['GET'])
-def api_get_by_id(mid):
+def api_get_migraine_by_id(mid):
     print(f"get all migraine with id {mid}")
     migraine = repo.get_migraine_by_id(mid)
     return make_response(jsonify(migraine.as_dict()), 200)
