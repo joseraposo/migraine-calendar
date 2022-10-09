@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateField, IntegerField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
 import migraine_calendar.repository as repo
 
@@ -19,10 +19,29 @@ class RegistrationForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
-    username = StringField('Username',
-                            validators=[DataRequired()])
+    username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
 
 
+class MigraineForm(FlaskForm):
+    start = DateField('Start', validators=[DataRequired()])
+    stop = DateField('Stop')
+    intensity = IntegerField('Intensity')
+    medication = StringField('Medication')
+    reason = StringField('Reason')
+    notes = StringField('Notes')
+    submit = SubmitField('Add')
+
+
+class SleepForm(FlaskForm):
+    start = DateField('Start', validators=[DataRequired()])
+    stop = DateField('Stop')
+    light_min = IntegerField('Light')
+    deep_min = IntegerField('Deep')
+    rem_min = IntegerField('Rem')
+    awake_min = IntegerField('Awake')
+    feeling = StringField('Feeling')
+    notes = StringField('Notes')
+    submit = SubmitField('Add')

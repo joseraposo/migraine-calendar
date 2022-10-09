@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for
 from flask_login import login_user, current_user, logout_user, login_required
 from migraine_calendar import app, bcrypt
-from migraine_calendar.forms import RegistrationForm, LoginForm
+from migraine_calendar.forms import RegistrationForm, LoginForm, MigraineForm, SleepForm
 import migraine_calendar.repository as repo
 
 app.config['SECRET_KEY'] = '53ebc891254c13455ca4855d26d5ee90'
@@ -11,21 +11,13 @@ app.config['SECRET_KEY'] = '53ebc891254c13455ca4855d26d5ee90'
 @app.route("/home", methods=['GET'])
 @login_required
 def home():
-    migraines = repo.get_all_migraines()
-    return render_template('home.html', migraines=migraines)
-
-
-@app.route("/about", methods=['GET'])
-@login_required
-def about():
-    return render_template('about.html', title="About")
+    # migraines = repo.get_all_migraines()
+    return render_template('home.html')
 
 
 @app.route("/register", methods=['GET', 'POST'])
 @login_required
 def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
@@ -45,8 +37,6 @@ def login():
         if user and bcrypt.check_password_hash(user.password_hash, form.password.data):
             login_user(user, remember=form.remember.data)
             return redirect(url_for('home'))
-        else:
-            flash('Login Unsuccessful. Please check username and password', 'danger')
     return render_template('login.html', title="Login", form=form)
 
 
@@ -54,3 +44,25 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+
+@app.route("/add_migraine", methods=['GET', 'POST'])
+@login_required
+def add_migraine():
+    form = MigraineForm()
+    if form.validate_on_submit():
+        flash(f'Migraine created successfully!', 'success')
+        # return  # created migraine
+        return render_template('add_migraine.html', title="Add Migraine", form=form)
+    return render_template('add_migraine.html', title="Add Migraine", form=form)
+
+
+@app.route("/add_sleep", methods=['GET', 'POST'])
+@login_required
+def add_sleep():
+    form = SleepForm()
+    if form.validate_on_submit():
+        flash(f'Sleep created successfully!', 'success')
+        # return  # created migraine
+        return render_template('add_sleep.html', title="Add Sleep", form=form)
+    return render_template('add_sleep.html', title="Add Sleep", form=form)
